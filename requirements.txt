@@ -2,4 +2,4 @@ google.genai
 python-dotenv
 pandas
 fastapi
-uvicorn
+fuzzywuzzy
