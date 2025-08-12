@@ -6,6 +6,11 @@ interface ChatResponse {
   error: Error | null
 }
 
+const API_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000'
+    : 'https://fitness-mealcoach-ui.vercel.app'
+
 export function useChat(message: string): ChatResponse {
   const [data, setData] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
@@ -17,18 +22,12 @@ export function useChat(message: string): ChatResponse {
     setLoading(true)
     setError(null)
 
-    // Abort controller to cancel pending requests if message changes or on unmount
     const controller = new AbortController()
 
     const fetchChatResponse = async () => {
       try {
         const params = new URLSearchParams({ prompt: message })
-        // Update the endpoint as needed
-        // const response = await fetch(`/api/chatbot/generate?${params.toString()}`, {
-        //   method: "GET",
-        //   signal: controller.signal,
-        // })
-        const response = await fetch(`http://localhost:8000/generate?${params.toString()}`, {
+        const response = await fetch(`${API_URL}/generate?${params.toString()}`, {
           method: "GET",
           signal: controller.signal,
         })

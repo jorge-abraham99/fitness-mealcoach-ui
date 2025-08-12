@@ -53,8 +53,11 @@ const mapMealKey = (key: string): TransformedMealSection['key'] => {
   return map[key] || 'snacks'
 }
 
-// === Base API URL ===
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+// === Dynamic API URL based on environment ===
+const API_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:8000'
+    : 'https://fitness-mealcoach-ui.vercel.app'
 
 export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn {
   const {
