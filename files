@@ -1,0 +1,393 @@
+\`\`\`tsx
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { Card } from "@/components/ui/card"
+import { HeaderMetric } from "@/components/header-metric"
+import { MacroCircle } from "@/components/macro-circle"
+import { MealPlanTable } from "@/components/mealplan-table"
+import { ChatCoach } from "@/components/chat-coach"
+
+export default function Page() {
+  // Mock data — replace with real data
+  const objectiveKcal = 2200
+  const consumedKcal = 1540
+
+  const macros = [
+    { label: "Protein", type: "protein", value: 95, objective: 140, unit: "g", color: "#10b981" }, // emerald-500
+    { label: "Carbs", type: "carbs", value: 180, objective: 250, unit: "g", color: "#f59e0b" }, // amber-500
+    { label: "Fats", type: "fats", value: 50, objective: 75, unit: "g", color: "#ef4444" }, // red-500
+  ]
+
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="sticky top-0 z-10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+          <div className="flex items-center gap-3 px-4 py-3">
+            <SidebarTrigger />
+            <div className="flex flex-col">
+              <h1 className="text-lg font-semibold">Daily Overview</h1>
+              <p className="text-xs text-muted-foreground">
+                {new Date().toLocaleDateString(undefined, {
+                  weekday: "long",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <main className="px-4 py-6">
+          {/* 2-column layout: main content + larger right-side chat */}
+          <div className="grid gap-6 xl:grid-cols-[1fr_560px]">
+            {/* Main column */}
+            <div className="space-y-6">
+              {/* Smaller calories header metric */}
+              <Card className="p-4">
+                <HeaderMetric
+                  title="Total kcal vs Objective"
+                  current={consumedKcal}
+                  objective={objectiveKcal}
+                  accentClass="from-emerald-500 to-emerald-400"
+                  size="compact"
+                />
+              </Card>
+
+              {/* Smaller macro summary */}
+              <div className="grid gap-4 sm:grid-cols-3">
+                {macros.map((m, i) => (
+                  <Card key={i} className="p-3">
+                    <div className="flex items-center gap-3">
+                      <MacroCircle
+                        size={72}
+                        strokeWidth={8}
+                        value={m.value}
+                        objective={m.objective}
+                        color={m.color}
+                        background="#e5e7eb"
+                        ariaLabel={`${m.label} progress`}
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground">{m.label}</span>
+                        <span className="text-xl font-semibold">
+                          {m.value}/{m.objective}
+                          <span className="text-xs text-muted-foreground ml-1">{m.unit}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Meal plan table below macros */}
+              <Card className="p-4">
+                <div className="mb-3">
+                  <h2 className="text-base font-medium">Meal Plan</h2>
+                  <p className="text-xs text-muted-foreground">
+                    Today’s plan organized by meal.
+                  </p>
+                </div>
+                <MealPlanTable />
+              </Card>
+            </div>
+
+            {/* Right column: Bigger chat interface */}
+            <div className="xl:sticky xl:top-24">
+              <ChatCoach height="72vh" />
+            </div>
+          </div>
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
+  )
+}
+\`\`\`
+
+\`\`\`tsx
+"use client"
+
+import * as React from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card"
+import { Sparkles, Send } from 'lucide-react'
+
+type ChatMessage = {
+  role: "user" | "assistant"
+  content: string
+}
+
+const seed: ChatMessage[] = [
+  {
+    role: "assistant",
+    content:
+      "Hi! I’m your coach. Ask me about your meals, macros, or how to hit today’s target.",
+  },
+]
+
+export function ChatCoach({ height = "72vh" }: { height?: number | string }) {
+  const [messages, setMessages] = React.useState<ChatMessage[]>(seed)
+  const [input, setInput] = React.useState("")
+  const listRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight
+    }
+  }, [messages])
+
+  function coachReply(text: string): string {
+    const t = text.toLowerCase()
+    if (t.includes("protein"))
+      return "Aim for 25–35g protein per meal. Greek yogurt, eggs, tofu, or chicken are great choices."
+    if (t.includes("carb") || t.includes("carbs"))
+      return "Prefer complex carbs (oats, quinoa, rice) around workouts. Add fiber for steadier energy."
+    if (t.includes("fat"))
+      return "Include healthy fats like olive oil or nuts, but keep portion sizes in check to meet kcal goals."
+    if (t.includes("snack"))
+      return "Try a protein-forward snack: cottage cheese with berries or a protein shake and a banana."
+    if (t.includes("breakfast"))
+      return "Balanced breakfast idea: 2 eggs, whole-grain toast, and fruit. ~25g protein to start strong."
+    return "Keep a steady pace. What meal are you planning next—breakfast, lunch, snacks, or dinner?"
+  }
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmed = input.trim()
+    if (!trimmed) return
+    setMessages((prev) => [...prev, { role: "user", content: trimmed }])
+    setInput("")
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: coachReply(trimmed) },
+      ])
+    }, 220)
+  }
+
+  return (
+    <Card className="p-0 overflow-hidden border-emerald-200">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-50 to-transparent border-b">
+        <div className="grid size-6 place-items-center rounded-full bg-emerald-100 text-emerald-700">
+          <Sparkles className="size-4" />
+        </div>
+        <span className="text-sm font-semibold">Coach</span>
+        <span className="ml-auto text-xs text-muted-foreground">Always-on guidance</span>
+      </div>
+
+      {/* Messages */}
+      <div
+        ref={listRef}
+        className="px-3 py-3 space-y-2"
+        style={{ height, overflowY: "auto" }}
+      >
+        {messages.map((m, i) => (
+          <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
+            <div
+              className={
+                m.role === "user"
+                  ? "inline-block max-w-[85%] rounded-2xl bg-emerald-600 text-white px-3 py-2 text-sm shadow-sm"
+                  : "inline-block max-w-[85%] rounded-2xl bg-muted px-3 py-2 text-sm shadow-sm"
+              }
+            >
+              {m.content}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Composer */}
+      <form onSubmit={onSubmit} className="border-t px-3 py-3 flex gap-2 bg-background">
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask about meals, macros, timing..."
+          aria-label="Message coach"
+          className="focus-visible:ring-emerald-500"
+        />
+        <Button
+          type="submit"
+          className="bg-emerald-600 hover:bg-emerald-700"
+        >
+          <Send className="h-4 w-4" />
+          <span className="sr-only">Send</span>
+        </Button>
+      </form>
+    </Card>
+  )
+}
+\`\`\`
+
+\`\`\`tsx
+"use client"
+
+import { Badge } from "@/components/ui/badge"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Sunrise, Salad, Cookie, Moon } from 'lucide-react'
+
+type MealItem = {
+  name: string
+  qty: string
+  kcal: number
+  p: number
+  c: number
+  f: number
+}
+
+type MealKey = "breakfast" | "lunch" | "snacks" | "dinner"
+
+type MealSection = {
+  key: MealKey
+  label: string
+  items: MealItem[]
+}
+
+const defaultPlan: MealSection[] = [
+  {
+    key: "breakfast",
+    label: "Breakfast",
+    items: [
+      { name: "Greek Yogurt + Berries", qty: "1 cup + 1/2 cup", kcal: 220, p: 20, c: 28, f: 3 },
+      { name: "Whole-grain Toast", qty: "1 slice", kcal: 90, p: 4, c: 16, f: 1 },
+    ],
+  },
+  {
+    key: "lunch",
+    label: "Lunch",
+    items: [{ name: "Chicken Bowl (rice, veg)", qty: "1 bowl", kcal: 520, p: 40, c: 58, f: 14 }],
+  },
+  {
+    key: "snacks",
+    label: "Snacks",
+    items: [
+      { name: "Protein Shake", qty: "1 scoop + water", kcal: 140, p: 25, c: 4, f: 2 },
+      { name: "Banana", qty: "1 medium", kcal: 105, p: 1, c: 27, f: 0 },
+    ],
+  },
+  {
+    key: "dinner",
+    label: "Dinner",
+    items: [{ name: "Salmon + Quinoa + Veg", qty: "1 plate", kcal: 480, p: 38, c: 40, f: 18 }],
+  },
+]
+
+type MealPlanTableProps = {
+  plan?: MealSection[]
+}
+
+const sectionMeta: Record<
+  MealKey,
+  { icon: React.ComponentType<{ className?: string }>; color: string; tint: string }
+> = {
+  breakfast: { icon: Sunrise, color: "text-amber-700", tint: "bg-amber-100" },
+  lunch: { icon: Salad, color: "text-emerald-700", tint: "bg-emerald-100" },
+  snacks: { icon: Cookie, color: "text-violet-700", tint: "bg-violet-100" },
+  dinner: { icon: Moon, color: "text-rose-700", tint: "bg-rose-100" },
+}
+
+export function MealPlanTable({ plan = defaultPlan }: MealPlanTableProps) {
+  return (
+    <div className="w-full overflow-x-auto rounded-lg border shadow-sm">
+      <Table>
+        <TableHeader className="sticky top-0 z-[1] bg-background/80 backdrop-blur">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="w-[40%]">Item</TableHead>
+            <TableHead>Qty</TableHead>
+            <TableHead className="text-right">kcal</TableHead>
+            <TableHead className="text-right">P</TableHead>
+            <TableHead className="text-right">C</TableHead>
+            <TableHead className="text-right">F</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {plan.map((section) => (
+            <SectionRows key={section.key} section={section} />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
+
+function SectionRows({ section }: { section: MealSection }) {
+  const meta = sectionMeta[section.key]
+  const Icon = meta.icon
+
+  const totals = section.items.reduce(
+    (acc, i) => {
+      acc.kcal += i.kcal
+      acc.p += i.p
+      acc.c += i.c
+      acc.f += i.f
+      return acc
+    },
+    { kcal: 0, p: 0, c: 0, f: 0 }
+  )
+
+  return (
+    <>
+      {/* Section header row */}
+      <TableRow className="hover:bg-transparent">
+        <TableCell
+          colSpan={6}
+          id={section.key}
+          className="p-0"
+        >
+          <div className="flex items-center gap-3 px-3 py-2 border-l-4 bg-muted/40"
+               style={{ borderLeftColor: `hsl(var(--emerald-500, 142 72% 29%))` }}>
+            <div className={`grid size-6 place-items-center rounded-md ${meta.tint}`}>
+              <Icon className={`size-4 ${meta.color}`} />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">{section.label}</span>
+              <Badge variant="secondary" className="text-xs">
+                {totals.kcal} kcal
+              </Badge>
+            </div>
+          </div>
+        </TableCell>
+      </TableRow>
+
+      {/* Items */}
+      {section.items.map((i, idx) => (
+        <TableRow
+          key={section.label + idx}
+          className="odd:bg-muted/20 hover:bg-muted/50 transition-colors"
+        >
+          <TableCell className="font-medium">{i.name}</TableCell>
+          <TableCell className="text-sm text-muted-foreground">{i.qty}</TableCell>
+          <TableCell className="text-right tabular-nums">{i.kcal}</TableCell>
+          <TableCell className="text-right tabular-nums">
+            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100"> {i.p}g </Badge>
+          </TableCell>
+          <TableCell className="text-right tabular-nums">
+            <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100"> {i.c}g </Badge>
+          </TableCell>
+          <TableCell className="text-right tabular-nums">
+            <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100"> {i.f}g </Badge>
+          </TableCell>
+        </TableRow>
+      ))}
+
+      {/* Section subtotal */}
+      <TableRow className="bg-muted/30 hover:bg-muted/30">
+        <TableCell className="font-medium">Subtotal</TableCell>
+        <TableCell />
+        <TableCell className="text-right tabular-nums">{totals.kcal}</TableCell>
+        <TableCell className="text-right tabular-nums">{totals.p}g</TableCell>
+        <TableCell className="text-right tabular-nums">{totals.c}g</TableCell>
+        <TableCell className="text-right tabular-nums">{totals.f}g</TableCell>
+      </TableRow>
+    </>
+  )
+}
+\`\`\`
