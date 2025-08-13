@@ -29,7 +29,7 @@ interface UseMealPlanOptions {
 }
 
 interface UseMealPlanReturn {
-  mealPlan: TransformedMealSection[] | null
+  mealPlan: TransformedMealSection[]
   summary: NutritionSummary | null
   loading: boolean
   error: Error | null
@@ -53,13 +53,7 @@ const mapMealKey = (key: string): TransformedMealSection['key'] => {
   return map[key] || 'snacks'
 }
 
-// === Dynamic API URL based on environment ===
-// const API_URL =
-//   process.env.NODE_ENV === 'development'
-//     ? 'http://localhost:8000'
-//     : 'https://fitness-mealcoach-ui.vercel.app'
-
-
+// Use the relative path for API calls
 const API_BASE_URL = '/api'
 
 export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn {
@@ -68,7 +62,7 @@ export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn
     userId = null,
   } = options
 
-  const [mealPlan, setMealPlan] = useState<TransformedMealSection[] | null>(null)
+  const [mealPlan, setMealPlan] = useState<TransformedMealSection[]>([])
   const [summary, setSummary] = useState<NutritionSummary | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
@@ -121,10 +115,8 @@ export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn
     setLoading(true)
     setError(null)
     try {
-      const params = new URLSearchParams({ date })
-      if (userId) params.append('userId', userId)
-
-      const url = `${API_URL}/meal_plan?${params.toString()}`
+      // FIX: Calling the /api/generate endpoint without parameters as requested
+      const url = `${API_BASE_URL}/generate`
       const response = await fetch(url, { method: 'GET' })
       if (!response.ok) throw new Error(`Failed to fetch meal plan: ${response.status}`)
       const data = await response.json()
@@ -136,7 +128,7 @@ export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn
     } finally {
       setLoading(false)
     }
-  }, [date, userId, transformResponse])
+  }, [transformResponse]) // FIX: Removed date and userId from dependencies
 
   // === Refresh: re-fetch data manually ===
   const refresh = useCallback(async () => {
