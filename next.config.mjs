@@ -1,21 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
+  // ... your other configs like typescript, eslint, etc.
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: process.env.NODE_ENV === 'development'
-          ? 'http://localhost:8000/api/:path*' // Adjust port if FastAPI runs elsewhere
-          : '/api/:path*', // Let Vercel handle in prod
+        // This destination is ONLY for local development
+        // In production, Vercel handles this automatically
+        destination: 'http://127.0.0.1:8000/api/:path*',
       },
     ];
   },

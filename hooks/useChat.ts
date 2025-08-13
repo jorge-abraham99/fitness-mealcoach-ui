@@ -6,10 +6,12 @@ interface ChatResponse {
   error: Error | null
 }
 
-const API_URL =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:8000'
-    : 'https://fitness-mealcoach-ui.vercel.app'
+// const API_URL =
+//   process.env.NODE_ENV === 'development'
+//     ? 'http://localhost:8000'
+//     : 'https://fitness-mealcoach-ui.vercel.app'
+
+const API_BASE_URL = '/api';
 
 export function useChat(message: string): ChatResponse {
   const [data, setData] = useState<string | null>(null)
