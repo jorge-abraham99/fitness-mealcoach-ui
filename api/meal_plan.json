@@ -28,30 +28,38 @@
         }
       },
       "Dinner": {
-        "Main": "Beef and Rice Bowl",
+        "Main": "Eggs with Avocado and Toast",
         "Details": {
-          "Ground Beef": {
-            "quantity": "150g",
-            "Food Name": "Beef mince extra lean stewed",
-            "Protein (g)": "37.05",
-            "Fat (g)": "6.3",
-            "Carbohydrate (g)": "0.0",
-            "Energy (kcal)": "205.5"
+          "Eggs": {
+            "quantity": "100g",
+            "Food Name": "Quiche cheese and egg homemade (adjusted)",
+            "Protein (g)": "6.25",
+            "Fat (g)": "11.15",
+            "Carbohydrate (g)": "7.3",
+            "Energy (kcal)": "152.5"
           },
-          "Cooked Rice": {
-            "quantity": "200g",
-            "Food Name": "Rice ready-cooked plain re-heated",
-            "Protein (g)": "8.2",
-            "Fat (g)": "3.8",
-            "Carbohydrate (g)": "67.8",
-            "Energy (kcal)": "322"
+          "Avocado": {
+            "quantity": "50g",
+            "Food Name": "Avocado Hass flesh only",
+            "Protein (g)": "0.9",
+            "Fat (g)": "8.7",
+            "Carbohydrate (g)": "0.9",
+            "Energy (kcal)": "85.5"
+          },
+          "Toast": {
+            "quantity": "50g",
+            "Food Name": "Sesame prawn toast takeaway",
+            "Protein (g)": "6.45",
+            "Fat (g)": "14.9",
+            "Carbohydrate (g)": "8.35",
+            "Energy (kcal)": "191"
           }
         },
         "Dinner Totals": {
-          "Protein": "45.25g",
-          "Fat": "10.1g",
-          "Carbohydrate": "67.8g",
-          "Energy (kcal)": "527.5 kcal"
+          "Protein": "13.6g",
+          "Fat": "34.75g",
+          "Carbohydrate": "16.55g",
+          "Energy (kcal)": "429 kcal"
         }
       },
       "Snack": {
@@ -82,10 +90,10 @@
         }
       },
       "Daily Totals": {
-        "Total Protein": "105.61g",
-        "Total Fat": "31.04g",
-        "Total Carbohydrate": "142.88g",
-        "Total Energy (kcal)": "1240.9 kcal"
+        "Total Protein": "73.96g",
+        "Total Fat": "55.69g",
+        "Total Carbohydrate": "91.63g",
+        "Total Energy (kcal)": "1141.4 kcal"
       }
     }
   }

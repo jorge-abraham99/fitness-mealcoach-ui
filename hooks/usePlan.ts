@@ -54,7 +54,7 @@ const mapMealKey = (key: string): TransformedMealSection['key'] => {
 }
 
 // Use the relative path for API calls
-const API_BASE_URL = 'fitness-mealcoach-ui.vercel.app/api'
+const API_BASE_URL = 'http://localhost:8000' // Adjust based on your setup
 
 export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn {
   const {
