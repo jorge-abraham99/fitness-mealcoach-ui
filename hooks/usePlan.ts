@@ -54,7 +54,7 @@ const mapMealKey = (key: string): TransformedMealSection['key'] => {
 }
 
 // Use the relative path for API calls
-const API_BASE_URL = '/api'
+const API_BASE_URL = '/api/chatbot'
 
 export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn {
   const {
