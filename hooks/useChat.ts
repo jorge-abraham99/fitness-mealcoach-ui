@@ -11,7 +11,7 @@ interface ChatResponse {
 //     ? 'http://localhost:8000'
 //     : 'https://fitness-mealcoach-ui.vercel.app'
 
-const API_BASE_URL = '/api/chatbot';
+const API_BASE_URL = 'fitness-mealcoach-ui.vercel.app/api';
 
 export function useChat(message: string): ChatResponse {
   const [data, setData] = useState<string | null>(null)
@@ -29,7 +29,7 @@ export function useChat(message: string): ChatResponse {
     const fetchChatResponse = async () => {
       try {
         const params = new URLSearchParams({ prompt: message })
-        const response = await fetch(`${API_BASE_URL}/generate?${params.toString()}`, {
+        const response = await fetch(`${API_BASE_URL}/chat?${params.toString()}`, {
           method: "GET",
           signal: controller.signal,
         })

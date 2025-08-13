@@ -10,6 +10,8 @@ from fastapi.responses import JSONResponse
 
 from prompts import system_prompt
 from call_function import available_functions, call_function
+from mangum import Mangum
+
 
 load_dotenv()
 app = FastAPI()
@@ -80,7 +82,7 @@ def generate_agent_response(user_prompt: str, verbose: bool = False) -> str:
         messages.append(types.Content(role="tool", parts=function_responses))
 
 
-@app.get("/api/chatbot/generate", response_class=PlainTextResponse)
+@app.get("/chat", response_class=PlainTextResponse)
 def generate(prompt: str = Query(..., description="User prompt to generate the agent response"), verbose: bool = False):
     try:
         final_response = generate_agent_response(prompt, verbose)
@@ -88,7 +90,7 @@ def generate(prompt: str = Query(..., description="User prompt to generate the a
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/chatbot/meal_plan", response_class=JSONResponse)
+@app.get("/generate_meal_plan", response_class=JSONResponse)
 def get_meal_plan():
     file_path = os.path.join(os.path.dirname(__file__), "meal_plan.json")
     if not os.path.exists(file_path):

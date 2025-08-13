@@ -54,7 +54,7 @@ const mapMealKey = (key: string): TransformedMealSection['key'] => {
 }
 
 // Use the relative path for API calls
-const API_BASE_URL = '/api/chatbot'
+const API_BASE_URL = 'fitness-mealcoach-ui.vercel.app/api'
 
 export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn {
   const {
@@ -116,7 +116,7 @@ export function useMealPlan(options: UseMealPlanOptions = {}): UseMealPlanReturn
     setError(null)
     try {
       // FIX: Calling the /api/generate endpoint without parameters as requested
-      const url = `${API_BASE_URL}/generate`
+      const url = `${API_BASE_URL}/generate_meal_plan`
       const response = await fetch(url, { method: 'GET' })
       if (!response.ok) throw new Error(`Failed to fetch meal plan: ${response.status}`)
       const data = await response.json()
