@@ -29,7 +29,7 @@ export function useChat(message: string): ChatResponse {
     const fetchChatResponse = async () => {
       try {
         const params = new URLSearchParams({ prompt: message })
-        const response = await fetch(`${API_BASE_URL}/chat?${params.toString()}`, {
+        const response = await fetch(`${API_BASE_URL}/chat/?${params.toString()}`, {
           method: "GET",
           signal: controller.signal,
         })
